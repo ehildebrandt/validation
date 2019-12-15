@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.2.2.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.example</groupId>
+	<artifactId>validation</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>validation</name>
+	<description>Demo project for Spring Boot</description>
+
+	<properties>
+		<java.version>11</java.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+		<maven.compiler.testSource>${java.version}</maven.compiler.testSource>
+		<maven.compiler.testTarget>${java.version}</maven.compiler.testTarget>
+		<maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<skip.unit.tests>false</skip.unit.tests>
+		<skip.integration.tests>false</skip.integration.tests>
+		<argLine>-Djava.security.egd=file:/dev/./urandom -Xmx1024m -noverify -XX:TieredStopAtLevel=1</argLine>
+		<immutables.version>2.8.2</immutables.version>
+		<spock.version>1.3-groovy-2.5</spock.version>
+		<groovy-eclipse-compiler.version>3.6.0-02</groovy-eclipse-compiler.version>
+		<groovy-eclipse-batch.version>2.5.8-02</groovy-eclipse-batch.version>
+		<aspectj-maven-plugin.version>1.12.1</aspectj-maven-plugin.version>
+		<hibernate-validator.version>6.1.0.Final</hibernate-validator.version>
+	</properties>
+
+	<dependencies>
+
+		<!-- COMPILE DEPENDENCIES -->
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<!-- Immutables: https://immutables.github.io/ -->
+		<dependency>
+			<groupId>org.immutables</groupId>
+			<artifactId>value</artifactId>
+			<version>${immutables.version}</version>
+		</dependency>
+
+		<!-- Project Lombok: https://projectlombok.org/ -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- AspectJ: https://www.eclipse.org/aspectj/ -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+		</dependency>
+
+		<!-- Spring Framework Aspects: https://docs.spring.io/spring/docs/2.5.x/reference/aop.html -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
+		</dependency>
+
+		<!-- JSR 303 - Bean Validation: https://beanvalidation.org/1.0/spec/ -->
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+		</dependency>
+
+		<!-- Hibernate Validator: https://hibernate.org/validator/ -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>${hibernate-validator.version}</version>
+		</dependency>
+
+		<!-- TEST DEPENDENCIES -->
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Spock: http://spockframework.org/ -->
+		<dependency>
+			<groupId>org.spockframework</groupId>
+			<artifactId>spock-core</artifactId>
+			<version>${spock.version}</version>
+		</dependency>
+
+		<!-- Spock Spring Module: http://spockframework.org/spock/docs/1.1/modules.html -->
+		<dependency>
+			<groupId>org.spockframework</groupId>
+			<artifactId>spock-spring</artifactId>
+			<version>${spock.version}</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Spring Boot Maven Plugin: https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-maven-plugin.html -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+			<!-- Build Helper Maven Plugin: http://www.mojohaus.org/build-helper-maven-plugin/ -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+			</plugin>
+
+			<!-- AspectJ Maven Plugin: https://www.mojohaus.org/aspectj-maven-plugin/ -->
+			<plugin>
+				<groupId>com.nickwongdev</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+			</plugin>
+
+			<!-- Maven Surefire Plugin: https://maven.apache.org/surefire/maven-surefire-plugin/ -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+
+			<!-- Maven Failsafe Plugin: http://maven.apache.org/surefire/maven-failsafe-plugin/ -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+			</plugin>
+
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!-- Build Helper Maven Plugin: http://www.mojohaus.org/build-helper-maven-plugin/ -->
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>${build-helper-maven-plugin.version}</version>
+					<executions>
+						<execution>
+							<id>add-source</id>
+							<phase>generate-sources</phase>
+							<goals>
+								<goal>add-source</goal>
+							</goals>
+							<configuration>
+								<sources>
+									<source>src/main/groovy</source>
+									<source>target/generated-sources/annotations</source>
+								</sources>
+							</configuration>
+						</execution>
+						<execution>
+							<id>add-test-source</id>
+							<phase>generate-test-sources</phase>
+							<goals>
+								<goal>add-test-source</goal>
+							</goals>
+							<configuration>
+								<sources>
+									<source>src/test/groovy</source>
+									<source>src/test/generated-javadoc-json</source>
+									<source>src/test-integration/java</source>
+									<source>src/test-integration/groovy</source>
+								</sources>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+
+				<!-- Maven Compiler Plugin: https://maven.apache.org/plugins/maven-compiler-plugin/ -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven-compiler-plugin.version}</version>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+						<encoding>${project.build.sourceEncoding}</encoding>
+						<failOnWarning>true</failOnWarning>
+						<fork>true</fork>
+						<verbose>false</verbose>
+						<useIncrementalCompilation>false</useIncrementalCompilation>
+						<compilerId>groovy-eclipse-compiler</compilerId>
+						<compilerArguments>
+							<indy/><!-- optional; supported by batch 2.4.12-04+ -->
+							<javaAgentClass>lombok.launch.Agent</javaAgentClass>
+						</compilerArguments>
+					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.codehaus.groovy</groupId>
+							<artifactId>groovy-eclipse-compiler</artifactId>
+							<version>${groovy-eclipse-compiler.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.codehaus.groovy</groupId>
+							<artifactId>groovy-eclipse-batch</artifactId>
+							<version>${groovy-eclipse-batch.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+
+				<!-- AspectJ Maven Plugin: https://www.mojohaus.org/aspectj-maven-plugin/ -->
+				<plugin>
+					<groupId>com.nickwongdev</groupId> <!-- Fork to support Java 11: https://github.com/mojohaus/aspectj-maven-plugin/pull/45 -->
+					<artifactId>aspectj-maven-plugin</artifactId>
+					<version>${aspectj-maven-plugin.version}</version>
+					<executions>
+						<execution>
+							<id>default-compile</id>
+							<phase>process-classes</phase>
+							<goals>
+								<!-- use this goal to weave all your main classes -->
+								<goal>compile</goal>
+							</goals>
+							<configuration>
+								<weaveDirectories>
+									<weaveDirectory>${project.build.directory}/classes</weaveDirectory>
+								</weaveDirectories>
+							</configuration>
+						</execution>
+						<execution>
+							<id>default-testCompile</id>
+							<phase>process-test-classes</phase>
+							<goals>
+								<!-- use this goal to weave all your test classes -->
+								<goal>test-compile</goal>
+							</goals>
+							<configuration>
+								<weaveDirectories>
+									<weaveDirectory>${project.build.directory}/test-classes</weaveDirectory>
+								</weaveDirectories>
+							</configuration>
+						</execution>
+					</executions>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+						<complianceLevel>${java.version}</complianceLevel>
+						<encoding>${project.build.sourceEncoding}</encoding>
+						<showWeaveInfo>true</showWeaveInfo>
+						<verbose>true</verbose>
+						<Xlint>ignore</Xlint>
+						<excludes>
+							<exclude>**/*.java</exclude>
+						</excludes>
+						<forceAjcCompile>true</forceAjcCompile>
+						<sources/>
+						<aspectLibraries>
+							<aspectLibrary>
+								<groupId>org.springframework</groupId>
+								<artifactId>spring-aspects</artifactId>
+							</aspectLibrary>
+						</aspectLibraries>
+					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.aspectj</groupId>
+							<artifactId>aspectjrt</artifactId>
+							<version>${aspectj.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.aspectj</groupId>
+							<artifactId>aspectjtools</artifactId>
+							<version>${aspectj.version}</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+
+				<!-- Maven Surefire Plugin: https://maven.apache.org/surefire/maven-surefire-plugin/ -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>${maven-surefire-plugin.version}</version>
+					<configuration>
+						<parallel>methods</parallel>
+						<threadCount>4</threadCount>
+						<useFile>false</useFile>
+						<!-- Skips unit tests if the value of skip.unit.tests property is true -->
+						<skipTests>${skip.unit.tests}</skipTests>
+						<includes>
+							<include>**/*Test.java,**/*Spec.java</include>
+						</includes>
+						<excludes>
+							<exclude>**/*IntegrationTest.java,**/*IntegrationSpec.java</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+
+				<!-- Maven Failsafe Plugin: http://maven.apache.org/surefire/maven-failsafe-plugin/ -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>${maven-failsafe-plugin.version}</version>
+					<configuration>
+						<!-- Skips integration tests if the value of skip.integration.tests property is true-->
+						<skipTests>${skip.integration.tests}</skipTests>
+						<includes>
+							<include>**/*IntegrationTest.java,**/*IntegrationSpec.java</include>
+						</includes>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>integration-test</goal>
+								<goal>verify</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+</project>
