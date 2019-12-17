@@ -23,9 +23,7 @@
 		<maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<skip.unit.tests>false</skip.unit.tests>
-		<skip.integration.tests>false</skip.integration.tests>
-		<argLine>-Djava.security.egd=file:/dev/./urandom -Xmx1024m -noverify -XX:TieredStopAtLevel=1</argLine>
+		<argLine>-noverify -XX:TieredStopAtLevel=1</argLine>
 		<immutables.version>2.8.2</immutables.version>
 		<spock.version>1.3-groovy-2.5</spock.version>
 		<groovy-eclipse-compiler.version>3.6.0-02</groovy-eclipse-compiler.version>
@@ -175,7 +173,6 @@
 							<configuration>
 								<sources>
 									<source>src/test/groovy</source>
-									<source>src/test/generated-javadoc-json</source>
 									<source>src/test-integration/java</source>
 									<source>src/test-integration/groovy</source>
 								</sources>
@@ -295,18 +292,27 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>${maven-surefire-plugin.version}</version>
 					<configuration>
+						<argLine>${argLine}</argLine>
 						<parallel>methods</parallel>
 						<threadCount>4</threadCount>
+						<detail>true</detail>
 						<useFile>false</useFile>
-						<!-- Skips unit tests if the value of skip.unit.tests property is true -->
-						<skipTests>${skip.unit.tests}</skipTests>
 						<includes>
-							<include>**/*Test.java,**/*Spec.java</include>
+							<include>**/*Test.java</include>
+							<include>**/*Spec.java</include>
 						</includes>
 						<excludes>
-							<exclude>**/*IntegrationTest.java,**/*IntegrationSpec.java</exclude>
+							<exclude>**/*IntegrationTest.java</exclude>
+							<exclude>**/*IntegrationSpec.java</exclude>
 						</excludes>
 					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.surefire</groupId>
+							<artifactId>surefire-junit47</artifactId>
+							<version>${maven-surefire-plugin.version}</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 
 				<!-- Maven Failsafe Plugin: http://maven.apache.org/surefire/maven-failsafe-plugin/ -->
@@ -315,10 +321,10 @@
 					<artifactId>maven-failsafe-plugin</artifactId>
 					<version>${maven-failsafe-plugin.version}</version>
 					<configuration>
-						<!-- Skips integration tests if the value of skip.integration.tests property is true-->
-						<skipTests>${skip.integration.tests}</skipTests>
+						<argLine>${argLine}</argLine>
 						<includes>
-							<include>**/*IntegrationTest.java,**/*IntegrationSpec.java</include>
+							<include>**/*IntegrationTest.java</include>
+							<include>**/*IntegrationSpec.java</include>
 						</includes>
 					</configuration>
 					<executions>
@@ -329,6 +335,13 @@
 							</goals>
 						</execution>
 					</executions>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.surefire</groupId>
+							<artifactId>surefire-junit47</artifactId>
+							<version>${maven-failsafe-plugin.version}</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 			</plugins>
 		</pluginManagement>
