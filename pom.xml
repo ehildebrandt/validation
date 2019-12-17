@@ -30,6 +30,8 @@
 		<groovy-eclipse-batch.version>2.5.8-02</groovy-eclipse-batch.version>
 		<aspectj-maven-plugin.version>1.12.1</aspectj-maven-plugin.version>
 		<hibernate-validator.version>6.1.0.Final</hibernate-validator.version>
+		<byte-buddy.version>1.10.5</byte-buddy.version>
+		<objenesis.version>3.1</objenesis.version>
 	</properties>
 
 	<dependencies>
@@ -106,6 +108,20 @@
 			<groupId>org.spockframework</groupId>
 			<artifactId>spock-spring</artifactId>
 			<version>${spock.version}</version>
+		</dependency>
+
+		<!-- Optional dependencies for using Spock -->
+		<dependency> <!-- enables mocking of classes (in addition to interfaces) -->
+			<groupId>net.bytebuddy</groupId>
+			<artifactId>byte-buddy</artifactId>
+			<version>${byte-buddy.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency> <!-- enables mocking of classes without default constructor (together with CGLIB) -->
+			<groupId>org.objenesis</groupId>
+			<artifactId>objenesis</artifactId>
+			<version>${objenesis.version}</version>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
