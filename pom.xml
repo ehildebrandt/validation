@@ -191,6 +191,7 @@
 									<source>src/test/groovy</source>
 									<source>src/test-integration/java</source>
 									<source>src/test-integration/groovy</source>
+									<source>target/generated-test-sources/test-annotations</source>
 								</sources>
 							</configuration>
 						</execution>
