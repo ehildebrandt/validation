@@ -8,7 +8,5 @@ import org.springframework.validation.annotation.Validated;
 public class FooWithGroups {
 
     public void foo(@NotNull(groups = MyGroup1.class) @Size(min = 2, max = 5, groups = MyGroup2.class) String foo) {
-
     }
-
 }

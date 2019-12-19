@@ -9,7 +9,5 @@ import org.springframework.validation.annotation.Validated;
 public class Foo {
 
     public void foo(@NotNull @Size(min = 2, max = 5) String foo) {
-
     }
-
 }

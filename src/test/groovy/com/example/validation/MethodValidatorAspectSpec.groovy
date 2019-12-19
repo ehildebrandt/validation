@@ -107,6 +107,41 @@ class MethodValidatorAspectSpec extends Specification {
         notThrown(ConstraintViolationException)
     }
 
+    def "should check @NotEmpty annotation on constructor after creation"() {
+        when: "we create an new MyList instance with no elements"
+        new MyList()
+
+        then: "we except a ConstraintViolationException to be thrown"
+        thrown(ConstraintViolationException)
+    }
+
+    def "should accept valid parameters on constructor after creation"() {
+        when: "we create an new MyList instance with no elements"
+        new MyList(["test"])
+
+        then: "we except a ConstraintViolationException to be thrown"
+        notThrown(ConstraintViolationException)
+    }
+
+    def "should check @NotEmpty annotation on methode after execution"() {
+        when: "we create an empty MyList instance with no elements"
+        MyList.createEmptyList()
+
+        then: "we except a ConstraintViolationException to be thrown"
+        thrown(ConstraintViolationException)
+    }
+
+    def "should check @NotNull annotation on methode after execution"() {
+        given:
+        MyList myList = new MyList(List.of("test"))
+
+        when: "we copy MyList instance with no elements"
+        myList.copy()
+
+        then: "we expect that the ConstraintViolationException was not thrown"
+        notThrown(ConstraintViolationException)
+    }
+
     def "should check @NotNull annotation on implementation with groups"() {
         given: "a new Foo instance"
         FooWithGroups foo = new FooWithGroups();

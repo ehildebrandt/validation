@@ -2,6 +2,7 @@ package com.example.validation;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Optional;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -50,10 +51,11 @@ public class MethodValidatorAspect {
 
     @Before("preinitialization(*.new(.., @(javax.validation.* || javax.validation.constraints.*) (*), ..))")
     public void beforeConstructor(JoinPoint point) {
-        Constructor constructorToValidate = ((ConstructorSignature) point.getSignature()).getConstructor();
-        ExecutableValidator executableValidator = ValidatorHolder.getValidator().forExecutables();
-        Class<?>[] groups = determineValidationGroupsForConstructor(point);
-        Set<ConstraintViolation<Object>> result = executableValidator.validateConstructorParameters(constructorToValidate, point.getArgs(), groups);
+        Constructor<?> constructorToValidate = ((ConstructorSignature) point.getSignature()).getConstructor();
+        Set<? extends ConstraintViolation<?>> result = ValidatorHolder.getValidator().forExecutables().validateConstructorParameters(
+            constructorToValidate,
+            point.getArgs(),
+            determineValidationGroupsForConstructor(point));
         if (!result.isEmpty()) {
             throw new ConstraintViolationException(result);
         }
@@ -61,11 +63,21 @@ public class MethodValidatorAspect {
 
     @AfterReturning(pointcut = "execution(@(javax.validation.* || javax.validation.constraints.*) * *(..))", returning = "returnValue")
     public void afterMethod(JoinPoint point, Object returnValue) {
-        ExecutableValidator executableValidator = ValidatorHolder.getValidator().forExecutables();
-        Class<?>[] groups = determineValidationGroupsForMethod(point);
         Method methodToValidate = ((MethodSignature) point.getSignature()).getMethod();
-        Set<ConstraintViolation<Object>> result = executableValidator
-            .validateReturnValue(point.getThis(), methodToValidate, returnValue, groups);
+        Set<ConstraintViolation<Object>> result = ValidatorHolder.getValidator().forExecutables()
+            .validateReturnValue(point.getThis(), methodToValidate, returnValue, determineValidationGroupsForMethod(point));
+        if (!result.isEmpty()) {
+            throw new ConstraintViolationException(result);
+        }
+    }
+
+    @AfterReturning("execution((@(javax.validation.* || javax.validation.constraints.*) *).new(..))")
+    public void afterConstructor(JoinPoint point) {
+        Constructor<?> constructorToValidate = ((ConstructorSignature) point.getSignature()).getConstructor();
+        Set<? extends ConstraintViolation<?>> result = ValidatorHolder.getValidator().forExecutables().validateConstructorReturnValue(
+            constructorToValidate,
+            point.getThis(),
+            determineValidationGroupsForConstructor(point));
         if (!result.isEmpty()) {
             throw new ConstraintViolationException(result);
         }
@@ -89,22 +101,22 @@ public class MethodValidatorAspect {
             ClassUtils.hasMethod(factoryBeanType, method.getName(), method.getParameterTypes()));
     }
 
-    protected Class<?>[] determineValidationGroupsForMethod(JoinPoint point) {
+    private Class<?>[] determineValidationGroupsForMethod(JoinPoint point) {
         Method methodToValidate = ((MethodSignature) point.getSignature()).getMethod();
         Validated validatedAnnotation = AnnotationUtils.findAnnotation(methodToValidate, Validated.class);
-        if (validatedAnnotation == null) {
-            validatedAnnotation = AnnotationUtils.findAnnotation(point.getSignature().getDeclaringType(), Validated.class);
-        }
-        return (validatedAnnotation != null ? validatedAnnotation.value() : new Class<?>[0]);
+        return determineValidationGroups(validatedAnnotation, point.getSignature().getDeclaringType());
     }
 
-    protected Class<?>[] determineValidationGroupsForConstructor(JoinPoint point) {
-        Constructor constructorToValidate = ((ConstructorSignature) point.getSignature()).getConstructor();
+    private Class<?>[] determineValidationGroupsForConstructor(JoinPoint point) {
+        Constructor<?> constructorToValidate = ((ConstructorSignature) point.getSignature()).getConstructor();
         Validated validatedAnnotation = AnnotationUtils.findAnnotation(constructorToValidate, Validated.class);
-        if (validatedAnnotation == null) {
-            validatedAnnotation = AnnotationUtils.findAnnotation(point.getSignature().getDeclaringType(), Validated.class);
-        }
-        return (validatedAnnotation != null ? validatedAnnotation.value() : new Class<?>[0]);
+        return determineValidationGroups(validatedAnnotation, point.getSignature().getDeclaringType());
+    }
+
+    private Class<?>[] determineValidationGroups(Validated validatedAnnotation, Class<?> clazz) {
+        Validated annotation = Optional.ofNullable(validatedAnnotation)
+            .orElseGet(() -> AnnotationUtils.findAnnotation(clazz, Validated.class));
+        return Optional.ofNullable(annotation).map(Validated::value).orElse(new Class<?>[0]);
     }
 
 }

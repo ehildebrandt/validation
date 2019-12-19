@@ -124,6 +124,21 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- Spock Reports: https://github.com/renatoathaydes/spock-reports -->
+		<dependency>
+			<groupId>com.athaydes</groupId>
+			<artifactId>spock-reports</artifactId>
+			<version>1.6.2</version>
+			<scope>test</scope>
+			<!-- this avoids affecting your version of Groovy/Spock -->
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -322,6 +337,10 @@
 							<exclude>**/*IntegrationTest.java</exclude>
 							<exclude>**/*IntegrationSpec.java</exclude>
 						</excludes>
+						<systemProperties>
+							<com.athaydes.spockframework.report.showCodeBlocks>true</com.athaydes.spockframework.report.showCodeBlocks>
+							<com.athaydes.spockframework.report.outputDir>${user.dir}/target/spock-unit-tests-reports</com.athaydes.spockframework.report.outputDir>
+						</systemProperties>
 					</configuration>
 					<dependencies>
 						<dependency>
@@ -343,6 +362,10 @@
 							<include>**/*IntegrationTest.java</include>
 							<include>**/*IntegrationSpec.java</include>
 						</includes>
+						<systemProperties>
+							<com.athaydes.spockframework.report.showCodeBlocks>true</com.athaydes.spockframework.report.showCodeBlocks>
+							<com.athaydes.spockframework.report.outputDir>${user.dir}/target/spock-integration-tests-reports</com.athaydes.spockframework.report.outputDir>
+						</systemProperties>
 					</configuration>
 					<executions>
 						<execution>

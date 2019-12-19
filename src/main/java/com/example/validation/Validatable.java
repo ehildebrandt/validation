@@ -2,6 +2,7 @@ package com.example.validation;
 
 import static com.example.validation.ValidatorHolder.getValidator;
 
+import java.util.Optional;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -13,16 +14,12 @@ public interface Validatable {
 
 	@Value.Check
 	default void validate() {
-		Class<?>[] groups = determineValidationGroups(getClass());
+		Class<?>[] groups = Optional.ofNullable(AnnotationUtils.findAnnotation(getClass(), Validated.class))
+			.map(Validated::value)
+			.orElse(new Class<?>[0]);
 		Set<ConstraintViolation<Validatable>> result = getValidator().validate(this, groups);
 		if (!result.isEmpty()) {
 			throw new ConstraintViolationException(result);
 		}
 	}
-
-	private static Class<?>[] determineValidationGroups(Class<?> clazz) {
-		Validated validatedAnnotation =AnnotationUtils.findAnnotation(clazz, Validated.class);
-		return (validatedAnnotation != null ? validatedAnnotation.value() : new Class<?>[0]);
-	}
-
 }
