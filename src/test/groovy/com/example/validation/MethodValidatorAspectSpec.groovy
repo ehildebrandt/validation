@@ -143,7 +143,7 @@ class MethodValidatorAspectSpec extends Specification {
         notThrown(ConstraintViolationException)
     }
 
-    def "should throw an ConstraintViolationException in case one of the return value violate the JSR 303 annotations on methode after execution"() {
+    def "should throw an ConstraintViolationException in case one of the return value violate the JSR 303 annotations on method after execution"() {
         given: "an instance of other list"
         OtherList otherList = new OtherList()
 
@@ -154,7 +154,7 @@ class MethodValidatorAspectSpec extends Specification {
         thrown(ConstraintViolationException)
     }
 
-    def "should not validate in case one of the return value violate the JSR 303 annotations on a static methode after execution"() {
+    def "should not validate in case one of the return value violate the JSR 303 annotations on a static method after execution"() {
         when: "we create an empty MyList instance with no elements"
         OtherList.createEmptyListStatic()
 
@@ -162,7 +162,7 @@ class MethodValidatorAspectSpec extends Specification {
         notThrown(ConstraintViolationException)
     }
 
-    def "should accept return value in case they comply with the JSR 303 annotations on methode after execution"() {
+    def "should accept return value in case they comply with the JSR 303 annotations on method after execution"() {
         given:
         OtherList otherList = new OtherList(List.of("test"))
 
