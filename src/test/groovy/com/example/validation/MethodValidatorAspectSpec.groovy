@@ -129,7 +129,7 @@ class MethodValidatorAspectSpec extends Specification {
 
     def "should throw an ConstraintViolationException in case one of the parameters violate the JSR 303 annotations on constructor after creation"() {
         when: "we create an new MyList instance with no elements"
-        MyList.createEmptyList(Lists.emptyList())
+        new MyList(Lists.emptyList())
 
         then: "we except a ConstraintViolationException to be thrown"
         thrown(ConstraintViolationException)
@@ -137,7 +137,7 @@ class MethodValidatorAspectSpec extends Specification {
 
     def "should accept parameters in case they comply with the JSR 303 annotations on constructor after creation"() {
         when: "we create an new MyList instance with no elements"
-        MyList.createEmptyList(["test"])
+        new MyList(["test"])
 
         then: "we except a ConstraintViolationException to be thrown"
         notThrown(ConstraintViolationException)

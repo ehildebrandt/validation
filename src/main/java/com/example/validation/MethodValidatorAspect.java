@@ -56,7 +56,7 @@ public class MethodValidatorAspect {
         }
     }
 
-    @AfterReturning("execution((@(@(javax.validation.* || javax.validation.constraints.*) *) *).new(..))")
+    @AfterReturning("execution((@(javax.validation.* || javax.validation.constraints.*) *).new(..))")
     public void afterConstructor(JoinPoint point) {
         Constructor<?> constructorToValidate = ((ConstructorSignature) point.getSignature()).getConstructor();
         Set<? extends ConstraintViolation<?>> result = ValidatorHolder.getValidator().forExecutables().validateConstructorReturnValue(
