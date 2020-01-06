@@ -10,12 +10,12 @@ class ValidationHolderSpec extends Specification {
         given: "we requested the first validator instance"
         ValidatorHolder.getValidator();
 
-        when: "we try "
+        when: "we try instantiate the ValidatorHolder instance"
         def constructor = ValidatorHolder.class.getDeclaredConstructor();
         constructor.setAccessible(true);
         constructor.newInstance();
 
-        then:
+        then: "an exception should be thrown"
         InvocationTargetException e = thrown()
         e.cause.message == "This class can only be access through getValidator()"
     }
