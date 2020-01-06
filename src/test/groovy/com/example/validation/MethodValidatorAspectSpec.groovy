@@ -1,5 +1,6 @@
 package com.example.validation
 
+import org.assertj.core.util.Lists
 import spock.lang.Specification
 
 import javax.validation.ConstraintViolationException
@@ -128,7 +129,7 @@ class MethodValidatorAspectSpec extends Specification {
 
     def "should throw an ConstraintViolationException in case one of the parameters violate the JSR 303 annotations on constructor after creation"() {
         when: "we create an new MyList instance with no elements"
-        new MyList()
+        MyList.createEmptyList(Lists.emptyList())
 
         then: "we except a ConstraintViolationException to be thrown"
         thrown(ConstraintViolationException)
@@ -136,26 +137,37 @@ class MethodValidatorAspectSpec extends Specification {
 
     def "should accept parameters in case they comply with the JSR 303 annotations on constructor after creation"() {
         when: "we create an new MyList instance with no elements"
-        new MyList(["test"])
+        MyList.createEmptyList(["test"])
 
         then: "we except a ConstraintViolationException to be thrown"
         notThrown(ConstraintViolationException)
     }
 
     def "should throw an ConstraintViolationException in case one of the return value violate the JSR 303 annotations on methode after execution"() {
+        given: "an instance of other list"
+        OtherList otherList = new OtherList()
+
         when: "we create an empty MyList instance with no elements"
-        MyList.createEmptyList()
+        otherList.createEmptyList()
 
         then: "we except a ConstraintViolationException to be thrown"
         thrown(ConstraintViolationException)
     }
 
+    def "should not validate in case one of the return value violate the JSR 303 annotations on a static methode after execution"() {
+        when: "we create an empty MyList instance with no elements"
+        OtherList.createEmptyListStatic()
+
+        then: "we except a ConstraintViolationException to be thrown"
+        notThrown(ConstraintViolationException)
+    }
+
     def "should accept return value in case they comply with the JSR 303 annotations on methode after execution"() {
         given:
-        MyList myList = new MyList(List.of("test"))
+        OtherList otherList = new OtherList(List.of("test"))
 
         when: "we copy MyList instance with no elements"
-        myList.copy()
+        otherList.copy()
 
         then: "we expect that the ConstraintViolationException was not thrown"
         notThrown(ConstraintViolationException)

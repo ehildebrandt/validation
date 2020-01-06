@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import org.assertj.core.util.Lists;
 
 public @Valid class MyList extends ArrayList {
@@ -16,12 +15,8 @@ public @Valid class MyList extends ArrayList {
     }
 
     // this annoation should produce an exception for a unit test
-    public static @NotEmpty MyList createEmptyList() {
-        return new MyList(Lists.emptyList());
-    }
-
-    public @NotNull MyList copy() {
-        return new MyList(this);
+    public static MyList createEmptyList(List<String> values) {
+        return new MyList(values);
     }
 
 }

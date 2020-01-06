@@ -13,9 +13,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.ConstructorSignature;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.core.BridgeMethodResolver;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.util.ClassUtils;
 import org.springframework.validation.annotation.Validated;
 
 @Aspect
@@ -26,18 +24,8 @@ public class MethodValidatorAspect {
         Method methodToValidate = ((MethodSignature) point.getSignature()).getMethod();
         ExecutableValidator executableValidator = ValidatorHolder.getValidator().forExecutables();
         Class<?>[] groups = determineValidationGroupsForMethod(point);
-        Set<ConstraintViolation<Object>> result;
-        try {
-            result = executableValidator.validateParameters(
+        Set<ConstraintViolation<Object>> result = executableValidator.validateParameters(
                 point.getThis(), methodToValidate, point.getArgs(), groups);
-        } catch (IllegalArgumentException e) {
-            // Probably a generic type mismatch between interface and implementation.
-            // Let's try to find the bridged method on the implementation class.
-            methodToValidate = BridgeMethodResolver.findBridgedMethod(
-                ClassUtils.getMostSpecificMethod(methodToValidate, point.getThis().getClass()));
-            result = executableValidator.validateParameters(
-                point.getThis(), methodToValidate, point.getArgs(), groups);
-        }
         if (!result.isEmpty()) {
             throw new ConstraintViolationException(result);
         }
@@ -57,6 +45,9 @@ public class MethodValidatorAspect {
 
     @AfterReturning(pointcut = "execution(@(@(javax.validation.* || javax.validation.constraints.*) *) * *(..))", returning = "returnValue")
     public void afterMethod(JoinPoint point, Object returnValue) {
+        if(point.getThis() == null) {
+            return;
+        }
         Method methodToValidate = ((MethodSignature) point.getSignature()).getMethod();
         Set<ConstraintViolation<Object>> result = ValidatorHolder.getValidator().forExecutables()
             .validateReturnValue(point.getThis(), methodToValidate, returnValue, determineValidationGroupsForMethod(point));

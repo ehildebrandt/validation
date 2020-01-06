@@ -400,6 +400,10 @@
 						<targetClasses>
 							<param>com.example.validation*</param>
 						</targetClasses>
+						<excludedMethods>
+							<excludedMethod>hasAspect</excludedMethod>
+							<excludedMethod>aspectOf</excludedMethod>
+						</excludedMethods>
 						<threads>4</threads>
 					</configuration>
 				</plugin>
