@@ -11,5 +11,4 @@ public interface Sample extends Validatable {
     @Size(min = 1, max = 5)
     String getName();
 
-
 }

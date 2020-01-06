@@ -13,8 +13,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.ConstructorSignature;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.SmartFactoryBean;
 import org.springframework.core.BridgeMethodResolver;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ClassUtils;
@@ -23,13 +21,9 @@ import org.springframework.validation.annotation.Validated;
 @Aspect
 public class MethodValidatorAspect {
 
-    @Before("execution(* *(.., @(javax.validation.* || javax.validation.constraints.*) (*), ..))")
+    @Before("execution(* *(.., @(@(javax.validation.* || javax.validation.constraints.*) *) (*), ..))")
     public void beforeMethod(JoinPoint point) {
         Method methodToValidate = ((MethodSignature) point.getSignature()).getMethod();
-        // Avoid Validator invocation on FactoryBean.getObjectType/isSingleton
-        if (isFactoryBeanMetadataMethod(methodToValidate)) {
-            return;
-        }
         ExecutableValidator executableValidator = ValidatorHolder.getValidator().forExecutables();
         Class<?>[] groups = determineValidationGroupsForMethod(point);
         Set<ConstraintViolation<Object>> result;
@@ -49,7 +43,7 @@ public class MethodValidatorAspect {
         }
     }
 
-    @Before("preinitialization(*.new(.., @(javax.validation.* || javax.validation.constraints.*) (*), ..))")
+    @Before("preinitialization(*.new(.., @(@(javax.validation.* || javax.validation.constraints.*) *) (*), ..))")
     public void beforeConstructor(JoinPoint point) {
         Constructor<?> constructorToValidate = ((ConstructorSignature) point.getSignature()).getConstructor();
         Set<? extends ConstraintViolation<?>> result = ValidatorHolder.getValidator().forExecutables().validateConstructorParameters(
@@ -61,7 +55,7 @@ public class MethodValidatorAspect {
         }
     }
 
-    @AfterReturning(pointcut = "execution(@(javax.validation.* || javax.validation.constraints.*) * *(..))", returning = "returnValue")
+    @AfterReturning(pointcut = "execution(@(@(javax.validation.* || javax.validation.constraints.*) *) * *(..))", returning = "returnValue")
     public void afterMethod(JoinPoint point, Object returnValue) {
         Method methodToValidate = ((MethodSignature) point.getSignature()).getMethod();
         Set<ConstraintViolation<Object>> result = ValidatorHolder.getValidator().forExecutables()
@@ -71,7 +65,7 @@ public class MethodValidatorAspect {
         }
     }
 
-    @AfterReturning("execution((@(javax.validation.* || javax.validation.constraints.*) *).new(..))")
+    @AfterReturning("execution((@(@(javax.validation.* || javax.validation.constraints.*) *) *).new(..))")
     public void afterConstructor(JoinPoint point) {
         Constructor<?> constructorToValidate = ((ConstructorSignature) point.getSignature()).getConstructor();
         Set<? extends ConstraintViolation<?>> result = ValidatorHolder.getValidator().forExecutables().validateConstructorReturnValue(
@@ -81,24 +75,6 @@ public class MethodValidatorAspect {
         if (!result.isEmpty()) {
             throw new ConstraintViolationException(result);
         }
-    }
-
-    private boolean isFactoryBeanMetadataMethod(Method method) {
-        Class<?> clazz = method.getDeclaringClass();
-        // Call from interface-based proxy handle, allowing for an efficient check?
-        if (clazz.isInterface()) {
-            return ((FactoryBean.class .equals(clazz)|| SmartFactoryBean.class.equals(clazz)) &&
-                !method.getName().equals("getObject"));
-        }
-        // Call from CGLIB proxy handle, potentially implementing a FactoryBean method?
-        Class<?> factoryBeanType = null;
-        if (SmartFactoryBean.class.isAssignableFrom(clazz)) {
-            factoryBeanType = SmartFactoryBean.class;
-        } else if (FactoryBean.class.isAssignableFrom(clazz)) {
-            factoryBeanType = FactoryBean.class;
-        }
-        return (factoryBeanType != null && !method.getName().equals("getObject") &&
-            ClassUtils.hasMethod(factoryBeanType, method.getName(), method.getParameterTypes()));
     }
 
     private Class<?>[] determineValidationGroupsForMethod(JoinPoint point) {

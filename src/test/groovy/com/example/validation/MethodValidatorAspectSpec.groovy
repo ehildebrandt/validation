@@ -6,7 +6,7 @@ import javax.validation.ConstraintViolationException
 
 class MethodValidatorAspectSpec extends Specification {
 
-    def "should check @NotNull annotation on implementation"() {
+    def "should throw an ConstraintViolationException in case one of the parameters violate the JSR 303 annotations on implementation class"() {
         given: "a new Foo instance"
         Foo foo = new Foo();
 
@@ -17,29 +17,7 @@ class MethodValidatorAspectSpec extends Specification {
         thrown(ConstraintViolationException)
     }
 
-    def "should check min value of @Size annotation on implementation"() {
-        given: "a new Foo instance"
-        Foo foo = new Foo();
-
-        when: "we call the foo operation with an empty string"
-        foo.foo("")
-
-        then: "we except a ConstraintViolationException to be thrown"
-        thrown(ConstraintViolationException)
-    }
-
-    def "should check max value of @Size annotation on implementation"() {
-        given: "a new Foo instance"
-        Foo foo = new Foo();
-
-        when: "we call the foo operation with a to long string"
-        foo.foo("123456")
-
-        then: "we except a ConstraintViolationException to be thrown"
-        thrown(ConstraintViolationException)
-    }
-
-    def "should accept valid parameters on implementation"() {
+    def "should accept parameters in case they comply with the JSR 303 annotations on implementation class"() {
         given: "a new Foo instance"
         Foo foo = new Foo();
 
@@ -50,7 +28,29 @@ class MethodValidatorAspectSpec extends Specification {
         notThrown(ConstraintViolationException)
     }
 
-    def "should check @NotNull annotation on interface"() {
+    def "should throw an ConstraintViolationException in case one of the parameters violate custom JSR 303 annotations on implementation class"() {
+        given: "a new Contact instance"
+        Contact contact = new Contact();
+
+        when: "we call the setter with an invalid parameter"
+        contact.setPhoneNumber("abc")
+
+        then: "we except a ConstraintViolationException to be thrown"
+        thrown(ConstraintViolationException)
+    }
+
+    def "should accept parameters in case they comply with custom JSR 303 annotations on implementation class"() {
+        given: "a new Contact instance"
+        Contact contact = new Contact();
+
+        when: "we call the setter with a valid parameter"
+        contact.setPhoneNumber("123456789")
+
+        then: "we expect that the ConstraintViolationException was not thrown"
+        notThrown(ConstraintViolationException)
+    }
+
+    def "should throw an ConstraintViolationException in case one of the parameters violate the JSR 303 annotations on interface"() {
         given: "a new Bar instance"
         Bar bar = new BarImpl();
 
@@ -61,18 +61,7 @@ class MethodValidatorAspectSpec extends Specification {
         thrown(ConstraintViolationException)
     }
 
-    def "should check @NotEmpty annotation on interface"() {
-        given: "a new Bar instance"
-        Bar bar = new BarImpl();
-
-        when: "we call the bar operation with an empty list"
-        bar.bar(Collections.emptyList())
-
-        then: "we except a ConstraintViolationException to be thrown"
-        thrown(ConstraintViolationException)
-    }
-
-    def "should accept valid parameters on interface"() {
+    def "should accept parameters in case they comply with the JSR 303 annotations on interface"() {
         given: "a new Bar instance"
         Bar bar = new BarImpl();
 
@@ -83,7 +72,29 @@ class MethodValidatorAspectSpec extends Specification {
         notThrown(ConstraintViolationException)
     }
 
-    def "should check @NotNull annotation on constructor"() {
+    def "should throw an ConstraintViolationException in case one of the parameters violate custom JSR 303 annotations on interface"() {
+        given: "a new Bar instance"
+        Person person = new PersonImpl();
+
+        when: "we call the setter with an invalid parameter"
+        person.setPhoneNumber("abc")
+
+        then: "we except a ConstraintViolationException to be thrown"
+        thrown(ConstraintViolationException)
+    }
+
+    def "should accept parameters in case they comply with custom JSR 303 annotations on interface"() {
+        given: "a new Bar instance"
+        Person person = new PersonImpl();
+
+        when: "we call the setter with a valid parameter"
+        person.setPhoneNumber("123456789")
+
+        then: "we expect that the ConstraintViolationException was not thrown"
+        notThrown(ConstraintViolationException)
+    }
+
+    def "should throw an ConstraintViolationException in case one of the parameters violate the JSR 303 annotations on constructor"() {
         when: "we create an new FooBar instance with a null parameter"
         new FooBar(null)
 
@@ -91,15 +102,7 @@ class MethodValidatorAspectSpec extends Specification {
         thrown(ConstraintViolationException)
     }
 
-    def "should check @Min annotation on constructor"() {
-        when: "we create an new FooBar instance with a to small integer as parameter"
-        new FooBar(0)
-
-        then: "we except a ConstraintViolationException to be thrown"
-        thrown(ConstraintViolationException)
-    }
-
-    def "should accept valid parameters on constructor"() {
+    def "should accept parameters in case they comply with the JSR 303 annotations on constructor"() {
         when: "we create an new FooBar instance with a valid integer as parameter"
         new FooBar(1)
 
@@ -107,7 +110,23 @@ class MethodValidatorAspectSpec extends Specification {
         notThrown(ConstraintViolationException)
     }
 
-    def "should check @NotEmpty annotation on constructor after creation"() {
+    def "should throw an ConstraintViolationException in case one of the parameters violate custom JSR 303 annotations on constructor"() {
+        when: "we create an new Person instance with a invalid phone number as parameter"
+        new PersonImpl("abc")
+
+        then: "we except a ConstraintViolationException to be thrown"
+        thrown(ConstraintViolationException)
+    }
+
+    def "should accept parameters in case they comply with custom JSR 303 annotations on constructor"() {
+        when: "we create an new Person instance with a valid phone number as parameter"
+        new PersonImpl("123456789")
+
+        then: "we expect that the ConstraintViolationException was not thrown"
+        notThrown(ConstraintViolationException)
+    }
+
+    def "should throw an ConstraintViolationException in case one of the parameters violate the JSR 303 annotations on constructor after creation"() {
         when: "we create an new MyList instance with no elements"
         new MyList()
 
@@ -115,7 +134,7 @@ class MethodValidatorAspectSpec extends Specification {
         thrown(ConstraintViolationException)
     }
 
-    def "should accept valid parameters on constructor after creation"() {
+    def "should accept parameters in case they comply with the JSR 303 annotations on constructor after creation"() {
         when: "we create an new MyList instance with no elements"
         new MyList(["test"])
 
@@ -123,7 +142,7 @@ class MethodValidatorAspectSpec extends Specification {
         notThrown(ConstraintViolationException)
     }
 
-    def "should check @NotEmpty annotation on methode after execution"() {
+    def "should throw an ConstraintViolationException in case one of the return value violate the JSR 303 annotations on methode after execution"() {
         when: "we create an empty MyList instance with no elements"
         MyList.createEmptyList()
 
@@ -131,7 +150,7 @@ class MethodValidatorAspectSpec extends Specification {
         thrown(ConstraintViolationException)
     }
 
-    def "should check @NotNull annotation on methode after execution"() {
+    def "should accept return value in case they comply with the JSR 303 annotations on methode after execution"() {
         given:
         MyList myList = new MyList(List.of("test"))
 
@@ -142,7 +161,7 @@ class MethodValidatorAspectSpec extends Specification {
         notThrown(ConstraintViolationException)
     }
 
-    def "should check @NotNull annotation on implementation with groups"() {
+    def "should throw an ConstraintViolationException in case one of the parameters violate the JSR 303 annotations on implementation class with groups"() {
         given: "a new Foo instance"
         FooWithGroups foo = new FooWithGroups();
 
@@ -153,18 +172,7 @@ class MethodValidatorAspectSpec extends Specification {
         thrown(ConstraintViolationException)
     }
 
-    def "should check min value of @Size annotation on implementation with groups"() {
-        given: "a new Foo instance"
-        FooWithGroups foo = new FooWithGroups();
-
-        when: "we call the foo operation with an empty string"
-        foo.foo("")
-
-        then: "we expect that the ConstraintViolationException was not thrown"
-        notThrown(ConstraintViolationException)
-    }
-
-    def "should accept valid parameters on implementation with groups"() {
+    def "should accept parameters in case they comply with the JSR 303 annotations on implementation class with groups"() {
         given: "a new Foo instance"
         FooWithGroups foo = new FooWithGroups();
 
